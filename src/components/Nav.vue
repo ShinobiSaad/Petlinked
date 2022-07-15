@@ -17,7 +17,9 @@
           <a class="nav-link" aria-current="page" href="#">Friends</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="#">Chat</a>
+            <router-link class="nav-link" :to= "{name:'chat'}" >
+              Chat
+            </router-link>
         </li>
       </ul>
       <div class="d-flex">
