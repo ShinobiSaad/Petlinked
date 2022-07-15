@@ -1,9 +1,9 @@
 <template>
-    <div class="contailer" style="margin-top:20vh;">
+    <div style="margin-top:20vh;">
         <div class="card container p-5" style="width:50%">
-            <form>
+            <form class="form">
             <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Email address</label>
+                <label for="exampleInputEmail1" class="form-label fw-bold">Email address</label>
                 <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                 <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
             </div>
