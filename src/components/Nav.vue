@@ -21,6 +21,11 @@
               Chat
             </router-link>
         </li>
+        <li class="nav-item">
+          <router-link class="nav-link" :to= "{name:'profile'}" >
+            Profile
+          </router-link>
+        </li>
       </ul>
       <div class="d-flex">
         <router-link class="navbar-item" :to= "{name:'login'}" >

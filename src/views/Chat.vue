@@ -4,11 +4,6 @@
       <div class="col-2">
         <div class="card mt-5">
           <div class="card-body">
-            <!-- <h5 class="text-start fw-bold">Friends</h5>
-            <hr>
-            <span v-for="item in friendsList" :key="item.id">
-            <p class="text-start fw-bold fs-6" >{{item.userName}}</p>
-            </span> -->
             <h5 class="text-start fw-bold">Friends</h5>
             <hr>
             <div class="list-group-item list-group-item-action border-0" v-for="item in friendsList" :key="item.id" style="cursor:pointer;" @click="selectUser(item.userName)">
@@ -88,6 +83,8 @@
    </div>
 </template>
 <script>
+import { assertDeclareClass } from '@babel/types';
+
 export default {
   name: "Home",
   async created() {
@@ -108,7 +105,7 @@ export default {
             'userName' : 'Siam' 
             },
             {
-            'userName' : 'Saadman' 
+            'userName' : 'Saad' 
             },
             {
             'userName' : 'Oni' 
@@ -189,6 +186,7 @@ export default {
     async selectUser(username){
         this.selectedFriend = username
         this.chatMessage = []
+
     },
     async sendMessage(){
         this.chatMessage.push(
