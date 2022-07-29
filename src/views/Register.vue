@@ -52,7 +52,7 @@
                   </div>
 
                   <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                    <button type="button" class="btn btn-primary btn-lg">Register</button>
+                    <button type="button" class="btn btn-primary btn-lg" @click="register()">Register</button>
                   </div>
 
                 </form>
@@ -85,6 +85,11 @@
 export default {
     created(){
         document.body.style.backgroundColor = "rgb(129, 255, 192)";
-    }
+    },
+    methods : {
+      async register(){
+        alert("you have been registered");
+      }
+    },
 }
 </script>
