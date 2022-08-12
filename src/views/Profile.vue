@@ -1,6 +1,6 @@
 <template>
 <section class="vh-100">
-  <div class="container py-5 h-100">
+  <div class="container py-5 h-100" v-if="token !== 'null' && token != null">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col col-lg-6 mb-4 mb-lg-0">
         <div class="card mb-3" style="border-radius: .5rem;">
@@ -40,12 +40,28 @@
       </div>
     </div>
   </div>
+  <!-- Show when user is not found -->
+
+  <span v-if="token === 'null' || token == null" >
+    <h1 class="display-3" style="margin-top:20vh">You must be signed in to display the posts!</h1>
+    <br>
+    <br>
+    <router-link :to="'/login'"> 
+      <button type="button" class="btn btn-success btn-lg fw-bold">Sign in</button>
+    </router-link>
+  </span>
 </section>
 </template>
 <script>
 export default {
     created(){
+        this.token = localStorage.getItem("bearer_token")
         document.body.style.backgroundColor = "rgb(129, 255, 192)";
-    }
+    },
+    data(){
+      return {
+        token:null,
+      }
+    },
 }
 </script>
