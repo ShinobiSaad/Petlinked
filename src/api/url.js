@@ -1,0 +1,1 @@
+export const URL_OF_API = 'null'
