@@ -15,7 +15,7 @@
                   <div class="d-flex flex-row align-items-center mb-4">
                     <fa icon="user-astronaut" style="font-size:1.5vw; margin-right:1vw; margin-top:-1.5vw; color:#363535;" />
                     <div class="form-outline flex-fill mb-0">
-                      <input type="text" id="form3Example1c" class="form-control" v-model="user.email"/>
+                      <input type="text" id="form3Example1c" class="form-control" v-model="email"/>
                       <label class="form-label" for="form3Example1c">Username</label>
                     </div>
                   </div>
@@ -23,13 +23,13 @@
                   <div class="d-flex flex-row align-items-center mb-4">
                     <fa icon="lock" style="font-size:1.5vw; margin-right:1vw; margin-top:-1.5vw; color:#363535;"/>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="password" id="form3Example4c" class="form-control" v-model="user.password"/>
+                      <input type="password" id="form3Example4c" class="form-control" v-model="password"/>
                       <label class="form-label" for="form3Example4c">Password</label>
                     </div>
                   </div>
 
                   <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                    <button type="button" class="btn btn-primary btn-lg" @click="login()">Login</button>
+                    <button type="button" class="btn btn-primary btn-lg" @click="Login()">Login</button>
                   </div>
 
                 </form>
@@ -59,29 +59,52 @@
 </section>
 </template>
 <script>
+import { ref } from 'vue'
+import firebase from 'firebase/compat/app'
+
 export default {
+    setup() {
+      const email = ref("")
+      const password = ref("")
+
+      const Login = () => {
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(email.value, password.value)
+          .then(data => console.log(data))
+          .catch(err => alert(err.message))
+      }
+
+      return {
+        Login,
+        email,
+        password
+      }
+
+    },
+
     created(){
         document.body.style.backgroundColor = "rgb(129, 255, 192)";
     },
     data() {
       return {
-          email: null,
-          password: null,
-          cache: null,
-          error: null,
-          success: false,
+          // email: null,
+          // password: null,
+          // cache: null,
+          // error: null,
+          // success: false,
 
-          user: {
-            email:null,
-            password:null
-          }
+          // user: {
+          //   email:null,
+          //   password:null
+          // }
       }
 
   },
   methods: {
-    async login(){
-      this.$store.dispatch('loginUser', this.user)
-    },
+    // async login(){
+    //   this.$store.dispatch('loginUser', this.user)
+    // },
   },
 
 }

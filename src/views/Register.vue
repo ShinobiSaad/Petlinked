@@ -23,7 +23,7 @@
                   <div class="d-flex flex-row align-items-center mb-4">
                     <fa icon="envelope" style="font-size:1.5vw; margin-right:1vw; margin-top:-1.5vw; color:#363535;"/>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="email" id="form3Example3c" class="form-control" />
+                      <input type="email" id="form3Example3c" class="form-control" v-model="email"/>
                       <label class="form-label" for="form3Example3c">Your Email</label>
                     </div>
                   </div>
@@ -31,7 +31,7 @@
                   <div class="d-flex flex-row align-items-center mb-4">
                     <fa icon="lock" style="font-size:1.5vw; margin-right:1vw; margin-top:-1.5vw; color:#363535;"/>
                     <div class="form-outline flex-fill mb-0">
-                      <input type="password" id="form3Example4c" class="form-control" />
+                      <input type="password" id="form3Example4c" class="form-control" v-model="password"/>
                       <label class="form-label" for="form3Example4c">Password</label>
                     </div>
                   </div>
@@ -52,7 +52,7 @@
                   </div>
 
                   <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                    <button type="button" class="btn btn-primary btn-lg" @click="register()">Register</button>
+                    <button type="button" class="btn btn-primary btn-lg" @click="Register()">Register</button>
                   </div>
 
                 </form>
@@ -82,14 +82,39 @@
 </section>
 </template>
 <script>
+import { ref } from 'vue'
+import firebase from 'firebase/compat/app'
 export default {
+    setup() {
+      const email = ref("")
+      const password = ref("")
+
+      const Register = () => {
+        firebase
+          .auth()
+          .createUserWithEmailAndPassword(email.value, password.value)
+          .then(
+            user => {
+              alert(user)
+            }
+          )
+          .catch(err => alert(err.message))
+      }
+
+      return {
+        Register,
+        email,
+        password
+      }
+
+    },
     created(){
         document.body.style.backgroundColor = "rgb(129, 255, 192)";
     },
     methods : {
-      async register(){
-        alert("you have been registered");
-      }
+      // async register(){
+      //   alert("you have been registered");
+      // }
     },
 }
 </script>

@@ -28,14 +28,56 @@
         </li>
       </ul>
       <div class="d-flex">
-        <router-link class="navbar-item" :to= "{name:'login'}" >
-          <button type="button" class="btn btn-outline-success">Login</button>
-        </router-link>
+        <!-- <router-link class="navbar-item" :to= "{name:'login'}" > -->
+          <!-- <h4 style="margin-right:10px;">{{name}}</h4> -->
+          <button type="button" class="btn btn-outline-success" @click="Logout()">Logout</button>
+        <!-- </router-link> -->
       </div>
     </div>
   </div>
 </nav>
 </template>
+<script>
+import { ref, onBeforeMount } from 'vue'
+import firebase from 'firebase/compat/app'
+import { useRouter } from 'vue-router'
+export default {
+    setup() {
+      
+      const router = useRouter()
+      const name = ref("")
+
+      onBeforeMount(() => {
+        const user = firebase.auth().currentUser;
+        if (user) {
+          name.value = user.email.split('@')[0]
+        }
+      })
+
+      const Logout = () => {
+        firebase
+          .auth()
+          .signOut()
+          .then(router.replace('/login'))
+          .catch(err => alert(err.message))
+      }
+
+      return {
+        name,
+        Logout
+      }
+
+    },
+    created(){
+        document.body.style.backgroundColor = "rgb(129, 255, 192)";
+    },
+    methods : {
+      // async register(){
+      //   alert("you have been registered");
+      // }
+    },
+}
+</script>
 <style scoped>
 .navbar-nav > li{
   margin-left:50px;

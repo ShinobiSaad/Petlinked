@@ -1,6 +1,6 @@
 <template>
    <div id="app">
-    <div class="row p-3 mt-4" v-if="token !== 'null' && token != null">
+    <div class="row p-3 mt-4">
       <div class="col-2">
         <div class="card mt-5">
           <div class="card-body">
@@ -80,7 +80,7 @@
         </div>
       </div>
     </div>
-    <!-- Show when user is not found -->
+    <!-- Show when user is not found
 
       <span v-if="token === 'null' || token == null" >
         <h1 class="display-3" style="margin-top:20vh">You must be signed in to display the posts!</h1>
@@ -89,7 +89,7 @@
         <router-link :to="'/login'"> 
           <button type="button" class="btn btn-success btn-lg fw-bold">Sign in</button>
         </router-link>
-      </span>
+      </span> -->
    </div>
 </template>
 <script>
