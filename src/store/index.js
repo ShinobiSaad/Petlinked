@@ -21,8 +21,8 @@ export default createStore({
     loginUser( {}, user ) {
       try {
         const url = URL_OF_API
-        axios.post(url+'login', {
-          email: user.email,
+        axios.post(url+'authenticate', {
+          credential: user.email,
           password: user.password
         }).then( response => {
           if (response.data) {
@@ -31,11 +31,12 @@ export default createStore({
   
             localStorage.setItem(
               "bearer_token",
-              response.data
+              response.data.jwt
             )
-            console.log(response.data)
+            console.log(response.data.jwt)
             window.location.replace("/")
           }
+          console.log("Shanto")
         })
       } catch (error) {
         console.log(error)

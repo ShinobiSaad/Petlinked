@@ -1,1 +1,1 @@
-export const URL_OF_API = 'null'
+export const URL_OF_API = 'http://localhost:8080/'

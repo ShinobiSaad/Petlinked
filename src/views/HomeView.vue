@@ -18,10 +18,17 @@
         </div>
       </div>
       <div class="col-6">
-        <div class="card mt-5" v-for="p in posts" :key="p.id">
+        <div class="card mt-5">
           <div class="card-body">
-            <h5 class="text-start fw-bold">{{p.userName}}</h5>
-            <p class="text-start fw-normal fs-6">{{p.postBody}}</p>
+            <h5 class="text-start fw-bold" style="margin-bottom: 5vh;">Post Blog</h5>
+            <input v-model="blogText" type="text" class="form-control" placeholder="Enter Text" aria-label="input box">
+            <button class="btn btn-success" style="float:left; margin-top:2vh" @click="postBlog()" :disabled="!blogText">POST</button>
+          </div>
+        </div>
+        <div class="card mt-5" v-for="p in postAll" :key="p.id">
+          <div class="card-body">
+            <h5 class="text-start fw-bold">Jessica</h5>
+            <p class="text-start fw-normal fs-6">{{p.post}}</p>
             <div class="btn-group" style="float:left;" role="group" aria-label="Basic outlined example">
               <button type="button" class="btn btn-outline-primary">Like</button>
               <button type="button" class="btn btn-outline-primary">Comment</button>
@@ -54,14 +61,24 @@
    </div>
 </template>
 <script>
+import axios from 'axios'
+import { URL_OF_API } from "../api/url.js"
+
 export default {
-  name: "Home",
-  created() {
+name: "Home",
+ async created() {
     this.token = localStorage.getItem("bearer_token")
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('bearer_token')}`
+    console.log(this.token);
     document.body.style.backgroundColor = "rgb(129, 255, 192)";
+
+   await this.getPostList()
   },
   data() {
     return {
+        blogText:null,
+        postAll:[],
+        userId: 6,
         token:null,
         friendsList: [
             {
@@ -84,33 +101,6 @@ export default {
             'userName' : 'Abdal' 
             },
         ],
-
-      posts: [
-        {
-          'userName': 'Siam',
-          'postBody': 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-        },
-                {
-          'userName': 'Adomji',
-          'postBody': 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-        },
-                {
-          'userName': 'Oni',
-          'postBody': 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-        },
-                {
-          'userName': 'Sadman',
-          'postBody': 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-        },
-                {
-          'userName': 'Tasfia',
-          'postBody': 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-        },
-                {
-          'userName': 'Adbal',
-          'postBody': 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.',
-        },
-      ], 
       news: [
         {
           'newsTitle':'These Robo-Fish Could Help Save the Oceans from Microplastic Scientists have created tiny robots that can ‘swim’ around oceans and seas while absorbing microplastics',
@@ -144,6 +134,43 @@ export default {
         },
       ],
     }
+  },
+
+  methods : {
+    async getPostList () {
+      try {
+        const url = URL_OF_API
+        await axios.get(url + 'post/6/list',
+          {
+            headers: {'Content-type': 'application/json'}
+          }
+        ).then(response => {
+          this.postAll = response.data.data
+        })
+
+        console.log('this is the posts by user 6 = ', this.postAll)
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    async postBlog () {
+      try {
+        const url = URL_OF_API
+        await axios.post(url + 'post/create',
+          {
+            post: this.blogText
+          }
+        ).then(response => {
+          console.log(response)
+        })
+
+        await this.getPostList()
+
+      } catch (err) {
+        console.log(err)
+      }
+    },
   },
 };
 </script>
