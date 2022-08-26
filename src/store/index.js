@@ -33,10 +33,15 @@ export default createStore({
               "bearer_token",
               response.data.jwt
             )
-            console.log(response.data.jwt)
+
+            localStorage.setItem(
+              "username",
+              response.data.fullName
+            )
+            console.log(response)
             window.location.replace("/")
           }
-          console.log("Shanto")
+          console.log(response)
         })
       } catch (error) {
         console.log(error)

@@ -17,12 +17,18 @@
               <div class="card-body p-4">
                 <div class="row pt-1">
                   <div class="col-6 mb-3">
-                    <h6 class="fw-bold">Email</h6>
-                    <p class="text-muted">oni@gmail.com</p>
+                    <h6 class="fw-bold">Username</h6>
+                    <p class="text-muted">{{ userdetails.data.username }}</p>
                   </div>
                   <div class="col-6 mb-3">
-                    <h6 class="fw-bold">Phone</h6>
-                    <p class="text-muted">123 456 789</p>
+                    <h6 class="fw-bold">Email</h6>
+                    <p class="text-muted">{{ userdetails.data.emailAddress }}</p>
+                  </div>
+                </div>
+                <div class="row pt-1">
+                  <div class="col-6 mb-3">
+                    <h6 class="fw-bold">Full Name</h6>
+                    <p class="text-muted">{{ username }}</p>
                   </div>
                 </div>
                 <h6 class="fw-bold">Friends</h6>
@@ -53,15 +59,42 @@
 </section>
 </template>
 <script>
+import axios from 'axios'
+import { URL_OF_API } from "../api/url.js"
+
 export default {
-    created(){
-        this.token = localStorage.getItem("bearer_token")
-        document.body.style.backgroundColor = "rgb(129, 255, 192)";
+   async created(){
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('bearer_token')}`
+      await this.getUserProfile()
+      this.token = localStorage.getItem("bearer_token")
+      this.username = localStorage.getItem("username")
+      document.body.style.backgroundColor = "rgb(129, 255, 192)";
     },
     data(){
       return {
         token:null,
+        username:'',
+        userdetails: [],
       }
     },
+
+    methods : {
+      async getUserProfile () {
+        try {
+          const url = URL_OF_API
+          await axios.get(url + 'user/6',
+            {
+              headers: {'Content-type': 'application/json'}
+            }
+          ).then(response => {
+            this.userdetails = response
+          })
+
+          console.log('this userdetails = ', this.userdetails)
+        } catch (err) {
+          console.log(err)
+        }
+      },
+      },
 }
 </script>

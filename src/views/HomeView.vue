@@ -27,11 +27,54 @@
         </div>
         <div class="card mt-5" v-for="p in postAll" :key="p.id">
           <div class="card-body">
-            <h5 class="text-start fw-bold">Jessica</h5>
+            <h5 class="text-start fw-bold">{{ username }}</h5>
             <p class="text-start fw-normal fs-6">{{p.post}}</p>
             <div class="btn-group" style="float:left;" role="group" aria-label="Basic outlined example">
               <button type="button" class="btn btn-outline-primary">Like</button>
-              <button type="button" class="btn btn-outline-primary">Comment</button>
+              <button type="button" class="btn btn-outline-primary" @click="commentshow(p.id)">Comment</button>
+              <button type="button" class="btn btn-outline-primary" @click="commentpostshow(p.id)">Comment Post</button>
+            </div>
+            <br>
+            <br>
+            <div class="card mt-1 p-2" v-if="revealCommentPost">
+              <div class="card-body">
+                <input v-model="comment" type="text" class="form-control" placeholder="Enter Comment" aria-label="input box">
+                <button class="btn btn-success" style="float:left; margin-top:2vh" @click="commentpost(p.id)" :disabled="!comment">COMMENT</button>
+              </div>
+            </div>
+
+            <div v-if="revealComment">
+              <div class="card mt-1 p-2" v-for="c in comments" :key="c.id" style="border:none;">  
+                <div class="card-body" v-if="p.id === c.postId">
+                  <div class="card-title" 
+                    style="font-size:11px; 
+                          float:left; 
+                          font-weight:bold;
+                          color:#fff;
+                          background-color:green;
+                          border-radius: 5px;
+                          width:10vw;
+                          height:2vw;
+                          padding:0.5vw;
+                          "
+                  > 
+                     {{ c.fullName }}
+                  
+                  
+                  </div>
+                  <div class="card-text text-start"
+                    style=" background-color:#e3e4e6;
+                            border-radius: 5px;
+                            color:#000;
+                            margin-top:6%;
+                            padding:3%;
+
+                    "
+                  > 
+                    {{ c.comment }}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -68,6 +111,7 @@ export default {
 name: "Home",
  async created() {
     this.token = localStorage.getItem("bearer_token")
+    this.username = localStorage.getItem("username")
     axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('bearer_token')}`
     console.log(this.token);
     document.body.style.backgroundColor = "rgb(129, 255, 192)";
@@ -80,6 +124,12 @@ name: "Home",
         postAll:[],
         userId: 6,
         token:null,
+        username:'',
+        postId: null,
+        comments:[],
+        comment:null,
+        revealComment:false,
+        revealCommentPost: false,
         friendsList: [
             {
             'userName' : 'Siam' 
@@ -137,10 +187,63 @@ name: "Home",
   },
 
   methods : {
+    async commentpostshow(postId){
+      if (this.revealCommentPost == true) {
+          this.revealCommentPost = false
+          this.postId = null
+        } else {
+          this.revealCommentPost = true
+          this.postId = postId
+        }
+    },
+    async commentshow (postId) {
+        if (this.revealComment == true) {
+          this.revealComment = false
+        } else {
+          this.revealComment = true
+        }
+      try {
+        const url = URL_OF_API
+        await axios.get(url + postId +'/comment/list',
+          {
+            headers: {'Content-type': 'application/json'}
+          }
+        ).then(response => {
+          this.comments = response.data.data
+        })
+
+        console.log('this is the comments = ', this.comments)
+       
+
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    async commentpost (postId) {
+      try {
+        if (this.comment) {
+        const url = URL_OF_API
+        await axios.post(url + postId +'/comment/add',
+          {
+            comment: this.comment
+          }
+        ).then(response => {
+           console.log(response)
+        })
+
+       await this.commentshow(postId)
+        }
+
+
+
+      } catch (err) {
+        console.log(err)
+      }
+    },
     async getPostList () {
       try {
         const url = URL_OF_API
-        await axios.get(url + 'post/6/list',
+        await axios.get(url + 'post/list',
           {
             headers: {'Content-type': 'application/json'}
           }
