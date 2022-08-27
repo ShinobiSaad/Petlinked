@@ -38,6 +38,12 @@ export default createStore({
               "username",
               response.data.fullName
             )
+
+            localStorage.setItem(
+              "currentUser",
+              response.data.userId
+            )
+
             console.log(response)
             window.location.replace("/")
           }

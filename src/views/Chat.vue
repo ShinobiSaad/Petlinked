@@ -6,8 +6,8 @@
           <div class="card-body">
             <h5 class="text-start fw-bold">Friends</h5>
             <hr>
-            <div class="list-group-item list-group-item-action border-0" v-for="item in friendsList" :key="item.id" style="cursor:pointer;" @click="selectUser(item.userName)">
-                <div class="d-flex align-items-start">
+            <div class="list-group-item list-group-item-action border-0" v-for="item in friendsList" :key="item.id" style="cursor:pointer;" @click="selectUser(item.id)">
+                <div class="d-flex align-items-start" v-if="item.id != currentUser">
                     <img src="https://bootdey.com/img/Content/avatar/avatar5.png" class="rounded-circle mr-1" alt="Vanessa Tucker" width="40" height="40">
                     <div class="flex-grow-1 ml-3">
                         {{item.userName}}
@@ -21,42 +21,44 @@
         </div>
       </div>
       <div class="col-10">
-        <div class="card mt-5" v-if="selectedFriend">
+        <div class="card mt-5" v-if="selectedFriendId">
           <div class="card-body">
-            <h5 class="text-start fw-bold">{{selectedFriend}}</h5>
+            <h5 class="text-start fw-bold">{{friendInfo.firstName + ' ' +friendInfo.lastName}}</h5>
             <hr>
+            <span v-for="msg in userMessage" :key="msg.id">
 
-            <div class="d-flex flex-row justify-content-start">
+            <!-- Filter will be FriendId -->
+            <div class="d-flex flex-row justify-content-start" v-if="msg.senderId == selectedFriendId">
               <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp"
                 alt="avatar 1" style="width: 45px; height: 100%;">
               <div>
-                <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">Hi</p>
-                <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">Kikhobor ...???
-                </p>
-                <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">koy Kg goru khela?</p>
-                <p class="small ms-3 mb-3 rounded-3 text-muted">23:58</p>
+                  <p 
+                    class="small p-2 ms-3 mb-1 rounded-3"
+                    style="background-color: #f5f6f7;"
+                    > 
+                      {{ msg.message }}
+                    </p>
+                <!-- <p class="small ms-3 mb-3 rounded-3 text-muted">{{ msg.createdAt }}</p> -->
               </div>
             </div>
-
-            <div class="d-flex flex-row justify-content-end mb-4 pt-1">
+            
+            <!-- Filter will be userId -->
+            <div class="d-flex flex-row justify-content-end mb-4 pt-1" v-if="msg.senderId == currentUser">
               <div>
-                <p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">Hello.</p>
-                <p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">Behsi khete pari nai</p>
-                <p class="small p-2 me-3 mb-1 text-white rounded-3 bg-primary">Amar jor hoise!</p>
-                <p class="small me-3 mb-3 rounded-3 text-muted d-flex justify-content-end">00:06</p>
+                  <p 
+                    class="small p-2 ms-3 mb-1 rounded-3" 
+                    style="background-color: #266ebf;
+                    color:#fff;
+                    "            
+                    > 
+                     {{ msg.message }}
+                    </p>
+                <!-- <p class="small ms-3 mb-3 rounded-3 text-muted">{{ msg.createdAt }}</p> -->
               </div>
               <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava4-bg.webp"
                 alt="avatar 1" style="width: 45px; height: 100%;">
             </div>
-
-            <div class="d-flex flex-row justify-content-start">
-              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp"
-                alt="avatar 1" style="width: 45px; height: 100%;">
-              <div>
-                <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">Ayhay bolo ki?</p>
-                <p class="small ms-3 mb-3 rounded-3 text-muted">23:58</p>
-              </div>
-            </div>
+            </span>
 
             <div class="d-flex flex-row justify-content-end mb-4 pt-1" v-if="chatenabled">
               <div >
@@ -74,7 +76,7 @@
               alt="avatar 3" style="width: 40px; height: 100%;">
             <input type="text" class="form-control form-control-lg" id="exampleFormControlInput1"
               placeholder="Type message" v-model="chatBody">
-            <button class="btn btn-success" @click="sendMessage()">Send</button>
+            <button class="btn btn-success" @click="sendingChat()">Send</button>
           </div>
           </div>
         </div>
@@ -93,43 +95,59 @@
    </div>
 </template>
 <script>
-import { assertDeclareClass } from '@babel/types';
+import axios from 'axios'
+import { URL_OF_API } from "../api/url.js"
 
 export default {
   name: "Home",
   async created() {
     this.token = localStorage.getItem("bearer_token")
+    this.currentUser = localStorage.getItem("currentUser")
+    this.username = localStorage.getItem("username")
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('bearer_token')}`
+    console.log(this.token);
     document.body.style.backgroundColor = "#54b2c7";
   },
   data() {
     return {
       token:null,
         chatenabled:false,
-        chatMessage:[
-            {
-                chatBody:'',
-            }
-        ],
-        chatBody:'',
-        selectedFriend: null,
+        chatBody:null,
+        selectedFriendId: null,
+        userMessage:[],
+        recieverMessage:[],
+        friendInfo:[],
         friendsList: [
             {
-            'userName' : 'Siam' 
-            },
-            {
-            'userName' : 'Saad' 
-            },
-            {
-            'userName' : 'Oni' 
-            },        {
-            'userName' : 'Tasfia' 
-            },        {
+              'id': 1,
             'userName' : 'Adomji' 
-            },        {
+            },
+            {
+              'id': 12,
+            'userName' : 'Oni' 
+            },
+            {
+              'id': 6,
+            'userName' : 'Jessica' 
+            },       
+            {
+              'id': 4,
+            'userName' : 'Tasfia' 
+            },       
+             {
+              'id': 5,
+            'userName' : 'Adomji' 
+            },        
+            {
+              'id': 6,
             'userName' : 'Aladin' 
-            },        {
+            },        
+            {
+              'id': 7,
             'userName' : 'Shanto' 
-            },        {
+            },        
+            {
+              'id': 8,
             'userName' : 'Abdal' 
             },
         ],
@@ -195,19 +213,76 @@ export default {
     }
   },
     methods: {
-    async selectUser(username){
-        this.selectedFriend = username
+    async selectUser(id){
+        this.friendInfo = []
+        this.selectedFriendId = id
         this.chatMessage = []
+        
+        await this.getFriendInfo()
+        await this.getChatMessage()
+        
+        
 
     },
-    async sendMessage(){
-        this.chatMessage.push(
-            {
-                'chatBody': this.chatBody,
-            }
-        )
+    async getChatMessage () {
+      this.chatBody = null
+      this.userMessage = []
+      try {
+        const url = URL_OF_API
+        await axios.get(url + 'message/' + this.selectedFriendId,
+          {
+            headers: {'Content-type': 'application/json'}
+          }
+        ).then(response => {
+          this.userMessage = response.data.data
+        })
 
-        this.chatenabled = true
+        console.log('this is the messages from friend = ', this.userMessage)
+
+
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    async sendingChat () {
+      try {
+        if (this.chatBody) {
+        const url = URL_OF_API
+        await axios.post(url +'message/send/' + this.selectedFriendId,
+          {
+            message: this.chatBody
+          }
+        ).then(response => {
+           console.log(response)
+        })
+
+       await this.getChatMessage()
+        }
+        
+
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    async getFriendInfo () {
+      try {
+        const url = URL_OF_API
+        await axios.get(url + 'get/' + this.selectedFriendId,
+          {
+            headers: {'Content-type': 'application/json'}
+          }
+        ).then(response => {
+          this.friendInfo = response.data.data
+        })
+
+        console.log('this is the Info of the Friend= ', this.friendInfo)
+
+
+      } catch (err) {
+        console.log(err)
+      }
     },
   },
 };
